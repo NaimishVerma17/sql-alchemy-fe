@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <title>Car Rentals</title>
+</head>
+<script>
+    // Fetch the car id from query params.
+    const carId = window.location.href.split("?")[1].split("=")[1]
+
+    // Fetch the old orders of a car using the car id.
+    fetch(`http://127.0.0.1:5000/cars/${carId}/orders`).then(res => res.json()).then(res => {
+        // Map the response to the event object as supported by Calendar library
+        const events = res.map(event => ({title: event.name, start: event.from_date, end:event.to_date}))
+        // Store the reference of dom element for calendar
+        const calendarEl = document.getElementById('calendar');
+        // Construct the calendar object with event object and other ui params
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            events: events,
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            initialView: 'dayGridMonth',
+            editable: false, // Set to true if you want to allow event dragging and resizing
+            eventClick: function(info) {
+                // Handle event click if needed
+                console.log(info.event);
+            }
+        });
+        // Render the calendar
+        calendar.render();
+    })
+
+
+
+</script>
+<body>
+<!--Nav bar for the Rent page-->
+<nav class="navbar shadow navbar-light">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">Car Rental Service</span>
+        <a class="nav-link text-primary border rounded border-primary" aria-current="page" href="/">Home</a>
+    </div>
+</nav>
+<div class="w-100 d-flex gap-4 justify-content-center p-4">
+<!--    Booking form-->
+    <div class='card rounded shadow w-50'>
+        <p class='fs-4 p-2 bg-primary text-white text-center'>Booking form</p>
+        <form class='p-4' id="rental-form" >
+            <div class="mb-3">
+                <label for="name" class="form-label">Full name</label>
+                <input required type="text" class="form-control" id="name" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input required type="email" class="form-control" id="email" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone number</label>
+                <input required type="text" class="form-control" id="phone">
+            </div>
+            <div class="mb-3">
+                <label for="from" class="form-label">From</label>
+                <input required type="date" class="form-control" id="from">
+            </div>
+            <div class="mb-3">
+                <label for="to" class="form-label">To</label>
+                <input required type="date" class="form-control" id="to">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+<!--    Calendar to show previous bookings-->
+    <div class='w-50 card rounded shadow '>
+        <p class='fs-4 p-2 bg-primary text-white text-center'>Previous bookings</p>
+        <div class='p-4' id='calendar'></div>
+    </div>
+
+</div>
+
+</body>
+<script>
+    // Call the api to create an order
+    const URL = `http://127.0.0.1:5000/orders`;
+    const form = document.getElementById("rental-form");
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        // Fetch the form values
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const phone = document.getElementById("phone").value;
+        const from = document.getElementById("from").value;
+        const to = document.getElementById("to").value;
+        // Validation for date range
+        if (from > to) {
+            alert("Please select valid date range!")
+        }
+        // Fetch the car id from query params
+        const location = window.location.href
+        const carId = location.split("?")[1].split("=")[1]
+
+        // Call the api with required data to create an order
+        fetch(URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                phone_number: phone,
+                from_date: from,
+                to_date: to,
+                car_id: +carId
+            })
+        })
+            .then(res => res.json()).then(res => {
+            if (res.success) {
+                // Show success alert and reset the form
+                alert("Order placed successfully!")
+                form.reset()
+            } else {
+                alert("Error placing the order!")
+            }
+        })
+    });
+
+</script>
+</html>

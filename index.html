@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Car Rentals</title>
+</head>
+<body class='bg-light'>
+<!--Nav bar for the landing page-->
+<nav class="navbar shadow navbar-light">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">Car Rental Service</span>
+    </div>
+</nav>
+<!--Loading spinner for landing page.-->
+<div id="loader" class="d-flex justify-content-center mt-4">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+<!--Div to display the main content of the page i.e. the list of cars-->
+<div class="py-4 d-flex gap-3 flex-wrap justify-content-center" id="cars"></div>
+</body>
+<script>
+    // Store the reference of dom elements in a local variable
+    const carsEl = document.getElementById("cars");
+    const loaderEl = document.getElementById("loader");
+    const URL = `http://127.0.0.1:5000/cars`;
+    // Fetch the list of cars
+    fetch(URL)
+        .then(response => response.json())
+        .then(responseJson => {
+            const carsList = responseJson.map(res => {
+                // If the stock is empty, we need to display a different ui with a message "Out of stock"
+                if (res.stock == 0) {
+                    return `
+               <div class="card shadow rounded" style="width: 18rem;">
+                  <img height="180px" src=${res.image} class="card-img-top" alt=${res.name}>
+                  <div class="card-body bg-light">
+                    <h5 class="card-title">${res.name}</h5>
+                    <p class="card-text">Price: ${res.price}€/hr</p>
+                    <h4 class="text-danger text-bold">
+                    Out of Stock!
+                    </h4>
+                  </div>
+                </div>`
+                } else {
+                    // If the car is in stock, we will redirect to different page to initiate a booking request
+                    return `
+               <div class="card shadow rounded" style="width: 18rem;">
+                  <img height="180px" src=${res.image} class="card-img-top" alt=${res.name}>
+                  <div class="card-body">
+                    <h5 class="card-title">${res.name}</h5>
+                    <p class="card-text">Price: ${res.price}€/hr</p>
+                    <div>
+                       <a aria-disabled="true" href="/rent?car-id=${res.id}" class="btn btn-primary rounded-pill">Rent</a>
+                    </div>
+                  </div>
+                </div>`
+                }
+
+            })
+            // Once the api is called successfully, remove the loader and display main content
+            loaderEl.remove()
+            carsEl.innerHTML = carsList.join("")
+        })
+
+</script>
+</html>
