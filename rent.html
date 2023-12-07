@@ -12,36 +12,35 @@
     <title>Car Rentals</title>
 </head>
 <script>
-    // Fetch the car id from query params.
-    const carId = window.location.href.split("?")[1].split("=")[1]
-
-    // Fetch the old orders of a car using the car id.
-    fetch(`http://127.0.0.1:5000/cars/${carId}/orders`).then(res => res.json()).then(res => {
-        // Map the response to the event object as supported by Calendar library
-        const events = res.map(event => ({title: event.name, start: event.from_date, end:event.to_date}))
-        // Store the reference of dom element for calendar
-        const calendarEl = document.getElementById('calendar');
-        // Construct the calendar object with event object and other ui params
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-            events: events,
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            initialView: 'dayGridMonth',
-            editable: false, // Set to true if you want to allow event dragging and resizing
-            eventClick: function(info) {
-                // Handle event click if needed
-                console.log(info.event);
-            }
-        });
-        // Render the calendar
-        calendar.render();
-    })
-
-
-
+    function loadPreviousEvents() {
+        // Fetch the car id from query params.
+        const carId = window.location.href.split("?")[1].split("=")[1]
+        // Fetch the old orders of a car using the car id.
+        fetch(`https://car-rental-123.azurewebsites.net/cars/${carId}/orders`).then(res => res.json()).then(res => {
+            // Map the response to the event object as supported by Calendar library
+            const events = res.map(event => ({title: event.name, start: event.from_date, end:event.to_date}))
+            // Store the reference of dom element for calendar
+            const calendarEl = document.getElementById('calendar');
+            // Construct the calendar object with event object and other ui params
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                events: events,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                initialView: 'dayGridMonth',
+                editable: false, // Set to true if you want to allow event dragging and resizing
+                eventClick: function(info) {
+                    // Handle event click if needed
+                    console.log(info.event);
+                }
+            });
+            // Render the calendar
+            calendar.render();
+        })
+    }
+    loadPreviousEvents()
 </script>
 <body>
 <!--Nav bar for the Rent page-->
@@ -90,7 +89,7 @@
 </body>
 <script>
     // Call the api to create an order
-    const URL = `http://127.0.0.1:5000/orders`;
+    const URL = `https://car-rental-123.azurewebsites.net/orders`;
     const form = document.getElementById("rental-form");
     form.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -127,6 +126,7 @@
             if (res.success) {
                 // Show success alert and reset the form
                 alert("Order placed successfully!")
+                loadPreviousEvents()
                 form.reset()
             } else {
                 alert("Error placing the order!")
