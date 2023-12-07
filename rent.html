@@ -18,7 +18,7 @@
         // Fetch the old orders of a car using the car id.
         fetch(`https://car-rental-123.azurewebsites.net/cars/${carId}/orders`).then(res => res.json()).then(res => {
             // Map the response to the event object as supported by Calendar library
-            const events = res.map(event => ({title: event.name, start: event.from_date, end:event.to_date}))
+            const events = res.map(event => ({title: event.name, start: event.from_date, end: event.to_date}))
             // Store the reference of dom element for calendar
             const calendarEl = document.getElementById('calendar');
             // Construct the calendar object with event object and other ui params
@@ -31,7 +31,7 @@
                 },
                 initialView: 'dayGridMonth',
                 editable: false, // Set to true if you want to allow event dragging and resizing
-                eventClick: function(info) {
+                eventClick: function (info) {
                     // Handle event click if needed
                     console.log(info.event);
                 }
@@ -40,6 +40,7 @@
             calendar.render();
         })
     }
+
     loadPreviousEvents()
 </script>
 <body>
@@ -50,11 +51,16 @@
         <a class="nav-link text-primary border rounded border-primary" aria-current="page" href="/">Home</a>
     </div>
 </nav>
-<div class="w-100 d-flex gap-4 justify-content-center p-4">
-<!--    Booking form-->
+<div class="w-100 d-flex flex-column gap-4 align-items-center p-4">
+    <!--    Calendar to show previous bookings-->
+    <div class='w-50 card rounded shadow '>
+        <p class='fs-4 p-2 bg-primary text-white text-center'>Previous bookings</p>
+        <div class='p-4' id='calendar'></div>
+    </div>
+    <!--    Booking form-->
     <div class='card rounded shadow w-50'>
         <p class='fs-4 p-2 bg-primary text-white text-center'>Booking form</p>
-        <form class='p-4' id="rental-form" >
+        <form class='p-4' id="rental-form">
             <div class="mb-3">
                 <label for="name" class="form-label">Full name</label>
                 <input required type="text" class="form-control" id="name" aria-describedby="emailHelp">
@@ -78,11 +84,7 @@
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
-<!--    Calendar to show previous bookings-->
-    <div class='w-50 card rounded shadow '>
-        <p class='fs-4 p-2 bg-primary text-white text-center'>Previous bookings</p>
-        <div class='p-4' id='calendar'></div>
-    </div>
+
 
 </div>
 
