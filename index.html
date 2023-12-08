@@ -36,7 +36,7 @@
         .then(responseJson => {
             const carsList = responseJson.map(res => {
                 // If the stock is empty, we need to display a different ui with a message "Out of stock"
-                if (res.stock == 0) {
+                if (res.stock == 0 || res.id==3) {
                     return `
                <div class="card shadow rounded" style="width: 18rem;">
                   <img height="180px" src=${res.image} class="card-img-top" alt=${res.name}>
