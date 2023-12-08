@@ -38,6 +38,8 @@
             });
             // Render the calendar
             calendar.render();
+        }).catch(err => {
+            alert("Error fetching the previous orders!")
         })
     }
 
@@ -125,14 +127,12 @@
             })
         })
             .then(res => res.json()).then(res => {
-            if (res.success) {
-                // Show success alert and reset the form
-                alert("Order placed successfully!")
-                loadPreviousEvents()
-                form.reset()
-            } else {
-                alert("Error placing the order!")
-            }
+            // Show success alert and reset the form
+            alert("Order placed successfully!")
+            loadPreviousEvents()
+            form.reset()
+        }).catch(error => {
+            alert("Error placing the order!")
         })
     });
 

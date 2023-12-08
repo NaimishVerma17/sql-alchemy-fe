@@ -67,7 +67,9 @@
             // Once the api is called successfully, remove the loader and display main content
             loaderEl.remove()
             carsEl.innerHTML = carsList.join("")
-        })
+        }).catch(error => {
+        alert("Error fetching the car list!")
+    })
 
 </script>
 </html>
